@@ -6,18 +6,28 @@ using System.Linq;
 namespace advent_of_code_2019.day1 {
     public static class Day1 {
         public static void Run () {
-            Console.WriteLine (AggregateFuel (GetFuelAmounts ()));
+            Console.WriteLine (AggregateFuel (GetFuelAmounts (), CalculateRealFuel));
         }
 
-        public static int AggregateFuel (IEnumerable<int> fuelRequirements) {
+        private static int AggregateFuel (IEnumerable<int> fuelRequirements, Func<int, int> Calculate) {
             return fuelRequirements.Aggregate (0, (acc, fuel) => acc + Calculate (fuel));
         }
 
-        public static int Calculate (int fuel) {
+        private static int CalculateNaiveFuel (int fuel) {
             return (fuel / 3) - 2;
         }
 
-        public static IEnumerable<int> GetFuelAmounts () {
+        private static int CalculateRealFuel (int fuel) {
+            int extraFuel = fuel;
+            int aggregator = 0;
+            do {
+                extraFuel = CalculateNaiveFuel (extraFuel);
+                aggregator += extraFuel > 0 ? extraFuel : 0;
+            } while (extraFuel > 0);
+            return aggregator;
+        }
+
+        private static IEnumerable<int> GetFuelAmounts () {
 
             var filePath = Path.Combine (
                 new string[] { Directory.GetCurrentDirectory (), "day1", "day1-input" }
