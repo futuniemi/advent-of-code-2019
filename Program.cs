@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using advent_of_code_2019.day1;
 using advent_of_code_2019.day2;
+using advent_of_code_2019.day3;
 
 namespace advent_of_code_2019
 {
@@ -10,7 +11,8 @@ namespace advent_of_code_2019
         static Dictionary<int, Action> DaySolutions =
             new Dictionary<int, Action>() {
                 { 1, Day1.Run } ,
-                { 2, Day2.Run }
+                { 2, Day2.Run },
+                { 3, Day3.Run },
             };
 
         static void Main(string[] args)
