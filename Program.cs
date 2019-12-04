@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using advent_of_code_2019.day1;
 using advent_of_code_2019.day2;
 using advent_of_code_2019.day3;
+using advent_of_code_2019.day4;
 
 namespace advent_of_code_2019
 {
@@ -13,6 +14,7 @@ namespace advent_of_code_2019
                 { 1, Day1.Run } ,
                 { 2, Day2.Run },
                 { 3, Day3.Run },
+                { 4, Day4.Run },
             };
 
         static void Main(string[] args)
