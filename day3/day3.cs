@@ -50,7 +50,7 @@ namespace advent_of_code_2019.day3
                         elapsedCoordinates = Process(pointer, amount, GoLeft);
                         break;
                     default:
-                        throw new Exception("Ecountered an unknown command");
+                        throw new Exception("Encountered an unknown command");
                 }
                 coordinates.AddRange(elapsedCoordinates);
                 pointer = elapsedCoordinates.Last();
