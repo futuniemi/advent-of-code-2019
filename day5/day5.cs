@@ -1,6 +1,7 @@
+using System;
+using System.Collections.Generic;
 using advent_of_code_2019.utils;
 using advent_of_code_2019.intcode;
-using System.Collections.Generic;
 
 namespace advent_of_code_2019.day5
 {
@@ -8,8 +9,15 @@ namespace advent_of_code_2019.day5
     {
         public static void Run()
         {
-            var machine = new IntcodeMachine(GetInput(), input: 1);
-            var state = machine.GetStateAfterRun();
+            var programInput = new List<int>(GetInput());
+            var machine = new IntcodeMachine(programInput, input: 1);
+            Console.WriteLine("Part 1");
+            machine.GetStateAfterRun();
+
+            programInput = new List<int>(GetInput());
+            machine = new IntcodeMachine(programInput, input: 5);
+            Console.WriteLine("Part 2");
+            machine.GetStateAfterRun();
         }
 
         private static List<int> GetInput()

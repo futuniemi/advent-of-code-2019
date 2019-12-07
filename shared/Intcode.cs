@@ -10,6 +10,10 @@ namespace advent_of_code_2019.intcode
         Multiply = 2,
         SaveAt = 3,
         Output = 4,
+        JumpIfTrue = 5,
+        JumpIfFalse = 6,
+        LessThan = 7,
+        Equals = 8,
         Terminate = 99
     }
 
@@ -115,6 +119,28 @@ namespace advent_of_code_2019.intcode
                         break;
                     case OpCode.Terminate:
                         stop = true;
+                        pointer += 4;
+                        break;
+                    case OpCode.JumpIfTrue:
+                        if (GetAt(1, operation.ModeParam1) != 0)
+                            pointer = GetAt(2, operation.ModeParam2);
+                        else
+                            pointer += 3;
+                        break;
+                    case OpCode.JumpIfFalse:
+                        if (GetAt(1, operation.ModeParam1) == 0)
+                            pointer = GetAt(2, operation.ModeParam2);
+                        else
+                            pointer += 3;
+                        break;
+                    case OpCode.LessThan:
+                        SetAt(3, operation.ModeParam3,
+                            (GetAt(1, operation.ModeParam1) < GetAt(2, operation.ModeParam2) ? 1 : 0));
+                        pointer += 4;
+                        break;
+                    case OpCode.Equals:
+                        SetAt(3, operation.ModeParam3,
+                            (GetAt(1, operation.ModeParam1) == GetAt(2, operation.ModeParam2) ? 1 : 0));
                         pointer += 4;
                         break;
                     default:
