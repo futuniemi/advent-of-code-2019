@@ -12,7 +12,12 @@ namespace advent_of_code_2019.day6 {
             GetDependencies ();
             var uniqueNodes = GetUniqueNodes ();
             uniqueNodes.ForEach (TravelHome);
-            Console.WriteLine (counter);
+            Console.WriteLine ("Part 1: " + counter);
+
+            var youRoute = GetHomeRoute ("YOU");
+            var sanRoute = GetHomeRoute ("SAN");
+            var diffRoute = youRoute.Except (sanRoute).Union (sanRoute.Except (youRoute));
+            Console.WriteLine ("Part 2: " + diffRoute.Count ());
         }
 
         private static List<string> GetUniqueNodes () =>
@@ -29,6 +34,17 @@ namespace advent_of_code_2019.day6 {
             if (node.Item1 != "COM") {
                 TravelHome (node.Item1);
             }
+        }
+
+        private static List<string> GetHomeRoute (string value) {
+            var route = new List<string> ();
+            var next = value;
+            while (next != "COM") {
+                var node = dependencies.Where (x => x.Item2 == next).First ();
+                route.Add (node.Item1);
+                next = node.Item1;
+            }
+            return route;
         }
 
         private static void GetDependencies () {
