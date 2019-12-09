@@ -23,7 +23,7 @@ namespace advent_of_code_2019.day2
                         var machine = new IntcodeMachine(new List<int>(GetNumbers()));
                         machine.Modify(1, noun);
                         machine.Modify(2, verb);
-                        var stateAfterRun = machine.GetStateAfterRun();
+                        var stateAfterRun = machine.GetStateAfterRun(out List<int> output, out bool paused);
                         if (stateAfterRun[0] == 19690720)
                         {
                             throw new Exception($"Found it! Noun: {noun}, Verb: {verb}");

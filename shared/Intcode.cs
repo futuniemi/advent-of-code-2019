@@ -27,22 +27,32 @@ namespace advent_of_code_2019.intcode
     {
         private int pointer = 0;
         private List<int> program;
-        private int? input;
+        private List<int> input;
+        private int inputPointer = 0;
 
         public void Modify(int valueAt, int replaceWith)
         {
             this.program[valueAt] = replaceWith;
         }
 
-        public IntcodeMachine(List<int> program, int? input = null)
+        public IntcodeMachine(List<int> program, List<int> input = null)
         {
             this.program = program;
-            this.input = input;
+            if (input != null)
+            {
+                this.input = input;
+            }
         }
 
-        public List<int> GetStateAfterRun()
+        public void AddInput(int input)
         {
-            this.IterateProgram();
+            if (this.input != null)
+                this.input.Add(input);
+        }
+
+        public List<int> GetStateAfterRun(out List<int> output, out bool paused)
+        {
+            output = this.IterateProgram(out paused);
             return program;
         }
 
@@ -62,15 +72,16 @@ namespace advent_of_code_2019.intcode
             );
 
         private void Multiply(Operation op) =>
-             SetAt(3, op.ModeParam3,
+            SetAt(3, op.ModeParam3,
                 GetAt(1, op.ModeParam1) * GetAt(2, op.ModeParam2)
-             );
+            );
 
         private void Set(int position)
         {
             if (this.input != null)
             {
-                program[position] = input.Value;
+                program[position] = input[inputPointer];
+                inputPointer++;
             }
         }
 
@@ -92,10 +103,13 @@ namespace advent_of_code_2019.intcode
             }
         }
 
-        private void IterateProgram()
+        private List<int> IterateProgram(out bool pause)
         {
+            List<int> output = new List<int>();
             var stop = false;
+            pause = false;
             var maxLength = program.Count();
+
             while (pointer < maxLength && !stop)
             {
                 var operation = new Operation(program[pointer].ToString());
@@ -114,8 +128,9 @@ namespace advent_of_code_2019.intcode
                         pointer += 2;
                         break;
                     case OpCode.Output:
-                        Console.WriteLine(GetAt(1, operation.ModeParam1));
+                        output.Add(GetAt(1, operation.ModeParam1));
                         pointer += 2;
+                        pause = true;
                         break;
                     case OpCode.Terminate:
                         stop = true;
@@ -147,9 +162,10 @@ namespace advent_of_code_2019.intcode
                         throw new Exception("Invalid opcode " +
                             program[pointer] + " at pointer " + pointer);
                 }
-                if (stop)
+                if (stop || pause)
                     break;
             }
+            return output;
         }
     }
 }
