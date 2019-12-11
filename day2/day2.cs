@@ -8,7 +8,7 @@ namespace advent_of_code_2019.day2
 {
     public static class Day2
     {
-        private static List<int> cleanNumbers = null;
+        private static List<long> cleanNumbers = null;
 
         public static void Run()
         {
@@ -20,10 +20,10 @@ namespace advent_of_code_2019.day2
                 {
                     foreach (int verb in verbs)
                     {
-                        var machine = new IntcodeMachine(new List<int>(GetNumbers()));
+                        var machine = new IntcodeMachine(new List<long>(GetNumbers()));
                         machine.Modify(1, noun);
                         machine.Modify(2, verb);
-                        var stateAfterRun = machine.GetStateAfterRun(out List<int> output, out bool paused);
+                        var stateAfterRun = machine.GetStateAfterRun(out List<long> output, out bool paused);
                         if (stateAfterRun[0] == 19690720)
                         {
                             throw new Exception($"Found it! Noun: {noun}, Verb: {verb}");
@@ -38,7 +38,7 @@ namespace advent_of_code_2019.day2
             }
         }
 
-        private static List<int> GetNumbers()
+        private static List<long> GetNumbers()
         {
             if (cleanNumbers == null)
             {
@@ -46,7 +46,7 @@ namespace advent_of_code_2019.day2
                     new string[] { Directory.GetCurrentDirectory(), "day2", "day2-input" }
                 );
                 var content = File.ReadAllText(filePath);
-                cleanNumbers = content.Split(",").ToList().Select(item => int.Parse(item)).ToList();
+                cleanNumbers = content.Split(",").ToList().Select(item => long.Parse(item)).ToList();
             }
             return cleanNumbers;
         }

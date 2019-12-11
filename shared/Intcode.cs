@@ -14,28 +14,32 @@ namespace advent_of_code_2019.intcode
         JumpIfFalse = 6,
         LessThan = 7,
         Equals = 8,
+        AdjustRelativeBase = 9,
         Terminate = 99
     }
 
     public enum ParameterMode
     {
         Position = 0,
-        Immediate = 1
+        Immediate = 1,
+        Relative = 2
     }
 
     public class IntcodeMachine
     {
         private int pointer = 0;
-        private List<int> program;
-        private List<int> input;
+        private List<long> program;
+        private List<long> input;
         private int inputPointer = 0;
 
-        public void Modify(int valueAt, int replaceWith)
+        private int relativeBase = 0;
+
+        public void Modify(int valueAt, long replaceWith)
         {
             this.program[valueAt] = replaceWith;
         }
 
-        public IntcodeMachine(List<int> program, List<int> input = null)
+        public IntcodeMachine(List<long> program, List<long> input = null)
         {
             this.program = program;
             if (input != null)
@@ -44,27 +48,50 @@ namespace advent_of_code_2019.intcode
             }
         }
 
-        public void AddInput(int input)
+        public void AddInput(long input)
         {
             if (this.input != null)
                 this.input.Add(input);
         }
 
-        public List<int> GetStateAfterRun(out List<int> output, out bool paused)
+        public List<long> GetStateAfterRun(out List<long> output, out bool paused)
         {
             output = this.IterateProgram(out paused);
             return program;
         }
 
-        private int GetAt(int p, ParameterMode mode) =>
-            mode == ParameterMode.Immediate ?
-            program[pointer + p] :
-            program[program[pointer + p]];
+        private long GetAt(int p, ParameterMode mode)
+        {
+            switch (mode)
+            {
+                case ParameterMode.Immediate:
+                    return program[pointer + p];
+                case ParameterMode.Position:
+                    return program[(int)program[pointer + p]];
+                case ParameterMode.Relative:
+                    return program[relativeBase + (int)program[pointer + p]];
+                default:
+                    throw new Exception("Unknown Parameter Mode");
+            }
+        }
 
-        private int SetAt(int at, ParameterMode mode, int value) =>
-            mode == ParameterMode.Immediate ?
-            program[pointer + at] = value :
-            program[program[pointer + at]] = value;
+        private void SetAt(int at, ParameterMode mode, long value)
+        {
+            switch (mode)
+            {
+                case ParameterMode.Immediate:
+                    program[pointer + at] = value;
+                    break;
+                case ParameterMode.Position:
+                    program[(int)program[pointer + at]] = value;
+                    break;
+                case ParameterMode.Relative:
+                    program[relativeBase + (int)program[pointer + at]] = value;
+                    break;
+                default:
+                    throw new Exception("Unknown Parameter mode");
+            }
+        }
 
         private void Add(Operation op) =>
             SetAt(3, op.ModeParam3,
@@ -76,8 +103,12 @@ namespace advent_of_code_2019.intcode
                 GetAt(1, op.ModeParam1) * GetAt(2, op.ModeParam2)
             );
 
-        private void Set(int position)
+        private void Set(Operation op)
         {
+            int position = op.ModeParam1 == ParameterMode.Relative ?
+                relativeBase + (int)program[pointer + 1] :
+                (int)program[pointer + 1];
+
             if (this.input != null)
             {
                 program[position] = input[inputPointer];
@@ -103,9 +134,9 @@ namespace advent_of_code_2019.intcode
             }
         }
 
-        private List<int> IterateProgram(out bool pause)
+        private List<long> IterateProgram(out bool pause)
         {
-            List<int> output = new List<int>();
+            List<long> output = new List<long>();
             var stop = false;
             pause = false;
             var maxLength = program.Count();
@@ -124,7 +155,7 @@ namespace advent_of_code_2019.intcode
                         pointer += 4;
                         break;
                     case OpCode.SaveAt:
-                        Set(program[pointer + 1]);
+                        Set(operation);
                         pointer += 2;
                         break;
                     case OpCode.Output:
@@ -138,13 +169,13 @@ namespace advent_of_code_2019.intcode
                         break;
                     case OpCode.JumpIfTrue:
                         if (GetAt(1, operation.ModeParam1) != 0)
-                            pointer = GetAt(2, operation.ModeParam2);
+                            pointer = (int)GetAt(2, operation.ModeParam2);
                         else
                             pointer += 3;
                         break;
                     case OpCode.JumpIfFalse:
                         if (GetAt(1, operation.ModeParam1) == 0)
-                            pointer = GetAt(2, operation.ModeParam2);
+                            pointer = (int)GetAt(2, operation.ModeParam2);
                         else
                             pointer += 3;
                         break;
@@ -157,6 +188,10 @@ namespace advent_of_code_2019.intcode
                         SetAt(3, operation.ModeParam3,
                             (GetAt(1, operation.ModeParam1) == GetAt(2, operation.ModeParam2) ? 1 : 0));
                         pointer += 4;
+                        break;
+                    case OpCode.AdjustRelativeBase:
+                        this.relativeBase += (int)GetAt(1, operation.ModeParam1);
+                        pointer += 2;
                         break;
                     default:
                         throw new Exception("Invalid opcode " +

@@ -8,7 +8,7 @@ namespace advent_of_code_2019.day7
 {
     public static class Day7
     {
-        static List<int> programInput = null;
+        static List<long> programInput = null;
         public static void Run()
         {
             RunPart1();
@@ -17,22 +17,22 @@ namespace advent_of_code_2019.day7
 
         private static void RunPart2()
         {
-            int highest = 0;
+            long highest = 0;
             var phaseSettingOptions = GetSecondPhaseSettingOptions();
 
             foreach (var settingOption in phaseSettingOptions)
             {
                 var machines = settingOption
                     .Select(x => new IntcodeMachine(
-                        new List<int>(GetInput()), new List<int> { x })).ToList();
-                var nextInput = 0;
+                        new List<long>(GetInput()), new List<long> { x })).ToList();
+                long nextInput = 0;
                 bool terminated = false;
                 while (!terminated)
                 {
                     foreach (IntcodeMachine machine in machines)
                     {
                         machine.AddInput(nextInput);
-                        machine.GetStateAfterRun(out List<int> output, out bool paused);
+                        machine.GetStateAfterRun(out List<long> output, out bool paused);
                         terminated = !paused;
                         if (output.Count() == 0)
                             break;
@@ -51,16 +51,16 @@ namespace advent_of_code_2019.day7
 
         private static void RunPart1()
         {
-            int highest = 0;
+            long highest = 0;
             var phaseSettingOptions = GetFirstPhaseSettingOptions();
             foreach (var settingOption in phaseSettingOptions)
             {
-                var nextInput = 0;
+                var nextInput = 0L;
                 foreach (var p in Enumerable.Range(0, 5))
                 {
-                    var input = new List<int> { settingOption[p], nextInput };
+                    var input = new List<long> { settingOption[p], nextInput };
                     var machine = new IntcodeMachine(GetInput(), input);
-                    machine.GetStateAfterRun(out List<int> output, out bool paused);
+                    machine.GetStateAfterRun(out List<long> output, out bool paused);
                     nextInput = output[0];
                 }
 
@@ -117,11 +117,13 @@ namespace advent_of_code_2019.day7
             return numberOptions;
         }
 
-        private static List<int> GetInput()
+        private static List<long> GetInput()
         {
             if (programInput == null)
             {
-                programInput = Utils.ParseLineToIntList(Utils.GetFilepath("day7", "day7-input"));
+                programInput = Utils
+                    .ParseLineToIntList(Utils.GetFilepath("day7", "day7-input"))
+                    .Select(x => (long)x).ToList();
             }
             return programInput;
         }
