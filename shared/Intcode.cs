@@ -54,6 +54,12 @@ namespace advent_of_code_2019.intcode
                 this.input.Add(input);
         }
 
+        public void FeedJustOneTypeOfInputRepeatedly(long input)
+        {
+            this.input = Enumerable.Repeat(input, 1000).ToList();
+            this.inputPointer = 0;
+        }
+
         public List<long> GetStateAfterRun(out List<long> output, out bool paused)
         {
             output = this.IterateProgram(out paused);

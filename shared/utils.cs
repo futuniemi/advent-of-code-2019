@@ -28,6 +28,12 @@ namespace advent_of_code_2019.utils
             return content.Split(",").ToList().Select(item => int.Parse(item)).ToList();
         }
 
+        public static List<long> ParseLineToLongList(string filePath)
+        {
+            var content = File.ReadAllText(filePath);
+            return content.Split(",").ToList().Select(item => long.Parse(item)).ToList();
+        }
+
         public static string GetFilepath(string directory, string filename)
         {
             return Path.Combine(

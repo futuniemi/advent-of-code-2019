@@ -8,6 +8,7 @@ using advent_of_code_2019.day5;
 using advent_of_code_2019.day6;
 using advent_of_code_2019.day7;
 using advent_of_code_2019.day9;
+using advent_of_code_2019.day11;
 
 namespace advent_of_code_2019
 {
@@ -22,7 +23,8 @@ namespace advent_of_code_2019
                 { 5, Day5.Run },
                 { 6, Day6.Run },
                 { 7, Day7.Run },
-                { 9, Day9.Run }
+                { 9, Day9.Run },
+                { 11, Day11.Run }
             };
 
         static void Main(string[] args)
